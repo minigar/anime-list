@@ -1,7 +1,7 @@
 import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { PassportStrategy } from '@nestjs/passport';
-import { AuthService } from 'src/features/auth.service';
-import { GoogleOAuthUser } from 'src/features/auth.dto';
+import { AuthService } from 'src/features/auth/auth.service';
+import { GoogleOAuthUser } from 'src/features/auth/auth.dto';
 import { Inject } from '@nestjs/common';
 import { AUTH_SERVICE_TOKEN } from 'src/common/constants';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
