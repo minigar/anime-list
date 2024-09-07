@@ -22,7 +22,7 @@ model Title {
   name String @unique
 
   description  String
-  premiereYear Int    @map("year_premiered") @db.SmallInt
+  premiereYear Int    @db.SmallInt
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
