@@ -7,6 +7,7 @@ import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import * as passport from 'passport';
 import * as session from 'express-session';
+import { BusinessErrorFilter } from './common/errors/businessErrors/businessError';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {});
@@ -42,6 +43,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new BusinessErrorFilter());
 
   await app.listen(port);
   Logger.log(`Server has been started at ${port} port!`);
