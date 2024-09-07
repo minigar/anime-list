@@ -23,8 +23,12 @@ export class AuthService {
     });
   }
 
-  async findOne(email: string): Promise<User> {
+  async getByEmail(email: string): Promise<User> {
     return await this.db.user.findUnique({ where: { email } });
+  }
+
+  async getById(id: number): Promise<User> {
+    return await this.db.user.findUnique({ where: { id } });
   }
 
   async logout(req: Request) {

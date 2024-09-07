@@ -13,6 +13,8 @@ model User {
   name  String
   email String @unique
 
+  role Role?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -26,4 +28,8 @@ model Title {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
 }

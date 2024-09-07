@@ -6,10 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { TitleService } from './titles.service';
 import { Title } from '@prisma/client';
 import { createTitleDto } from './title.dto';
+import { AdminGuard, GoogleVerificationGuard } from 'src/common/guards';
 
 @Controller('titles')
 export class TitleController {
@@ -25,6 +27,8 @@ export class TitleController {
     return await this.titleService.getById(id);
   }
 
+  @UseGuards(GoogleVerificationGuard)
+  @UseGuards(AdminGuard)
   @Post()
   async create(
     @Body() { name, description, premiereYear }: createTitleDto,
@@ -36,6 +40,8 @@ export class TitleController {
     });
   }
 
+  @UseGuards(GoogleVerificationGuard)
+  @UseGuards(AdminGuard)
   @Delete(':id')
   async deleteById(@Param('id', ParseIntPipe) id: number): Promise<Title> {
     return await this.titleService.deleteById(id);
