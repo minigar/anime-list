@@ -5,6 +5,8 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
+import * as passport from 'passport';
+import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {});
@@ -12,6 +14,20 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const port = configService.get<number>('APP_PORT', 3001);
+
+  app.use(
+    session({
+      secret: 'your-secret-key',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 60000 * 60, // 1 hour
+      },
+    }),
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   app.use(helmet.dnsPrefetchControl());
   app.use(helmet.frameguard());
