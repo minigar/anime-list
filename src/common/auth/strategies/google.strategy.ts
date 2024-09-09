@@ -4,14 +4,23 @@ import { AuthService } from 'src/features/auth/auth.service';
 import { GoogleOAuthUser } from 'src/features/auth/auth.dto';
 import { Inject } from '@nestjs/common';
 import { AUTH_SERVICE_TOKEN } from 'src/common/constants';
+import { ConfigService } from '@nestjs/config';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     @Inject(AUTH_SERVICE_TOKEN) private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {
+    const id = configService.getOrThrow<string>('GOOGLE_CLIENT_ID');
+    const secret = configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET');
+    const host = configService.getOrThrow<string>('GOOGLE_CLIENT_HOST');
+    const port = configService.getOrThrow<string>('APP_PORT');
+    const callbackUrl = configService.getOrThrow<string>(
+      'GOOGLE_CLIENT_CALLBACK_URL',
+    );
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:3001/auth/google/callback',
+      clientID: id,
+      clientSecret: secret,
+      callbackURL: `http://${host}:${port}/${callbackUrl}`,
       scope: ['email', 'profile'],
       prompt: 'consent',
     });
@@ -33,7 +42,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       accessToken,
       refreshToken,
     };
-
     console.log(user);
     await this.authService.signInOrUp(user);
 
