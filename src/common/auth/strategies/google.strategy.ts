@@ -42,7 +42,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       accessToken,
       refreshToken,
     };
-    console.log(user);
+
     await this.authService.signInOrUp(user);
 
     done(null, user);

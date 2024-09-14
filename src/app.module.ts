@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './features/auth/auth.module';
 import { TitleModule } from './features/titles/titles.module';
+import { UploadModule } from './features/upload/upload.module';
 import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 @Module({
@@ -19,6 +20,7 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     AuthModule,
     TitleModule,
+    UploadModule,
   ],
   providers: [
     {
