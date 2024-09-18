@@ -13,8 +13,8 @@ import { APP_GUARD } from '@nestjs/core';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => [
         {
-          ttl: seconds(config.getOrThrow<number>('UPLOAD_RATE_TTL_SHORT')),
-          limit: config.getOrThrow<number>('UPLOAD_RATE_LIMIT_SHORT'),
+          ttl: seconds(config.getOrThrow<number>('UPLOAD_RATE_TTL_LONG')),
+          limit: config.getOrThrow<number>('UPLOAD_RATE_LIMIT_LONG'),
         },
       ],
     }),

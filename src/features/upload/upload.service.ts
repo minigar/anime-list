@@ -4,18 +4,27 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UploadService {
-  private readonly s3Client = new S3Client({
-    region: this.configService.getOrThrow<string>('AWS_S3_REGION'),
-  });
-  constructor(private readonly configService: ConfigService) {}
+  protected readonly s3Client: S3Client;
+  protected readonly bucketName: string;
+  protected readonly region: string;
 
-  async upload(fileName: string, file: Buffer) {
+  constructor(private readonly configService: ConfigService) {
+    this.region = this.configService.getOrThrow<string>('AWS_S3_REGION');
+    this.bucketName = this.configService.getOrThrow<string>('AWS_S3_BUCKET');
+
+    this.s3Client = new S3Client({
+      region: this.region,
+    });
+  }
+
+  async getS3FileUrl(fileName: string, file: Buffer): Promise<string> {
     await this.s3Client.send(
       new PutObjectCommand({
-        Bucket: 'anime-list-bucket',
+        Bucket: this.bucketName,
         Key: fileName,
         Body: file,
       }),
     );
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${fileName}`;
   }
 }

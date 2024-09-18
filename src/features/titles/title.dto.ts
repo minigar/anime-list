@@ -28,4 +28,30 @@ export class createTitleDto {
   @Min(1900)
   @Max(2099)
   premiereYear: number;
+
+  imgUrl?: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(5000)
+  releasedEpisodes?: number;
+
+  @IsInt()
+  @Min(1)
+  @Max(5000)
+  episodes?: number;
+}
+
+export interface createTitleDtoIterface {
+  name: string;
+
+  description?: string;
+
+  premiereYear: number;
+
+  imgUrl?: string;
+
+  releasedEpisodes?: number;
+
+  episodes?: number;
 }

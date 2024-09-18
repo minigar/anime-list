@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Title } from '@prisma/client';
+import { Title, User } from '@prisma/client';
 import { DatabaseService } from 'src/data/database.service';
 import { createTitleDto } from './title.dto';
 import { BusinessError } from 'src/common/errors/businessErrors/businessError';
@@ -22,17 +22,44 @@ export class TitleService {
     return title;
   }
 
-  async create({
-    name,
-    description,
-    premiereYear,
-  }: createTitleDto): Promise<Title> {
-    const title = await this.db.title.findUnique({ where: { name } });
+  async create(
+    {
+      name,
+      description,
+      premiereYear,
+      imgUrl,
+      releasedEpisodes,
+      episodes,
+    }: createTitleDto,
+    userId: number,
+  ): Promise<Title> {
+    console.log(userId);
+    const user: User = await this.db.user.findUnique({
+      where: { id: userId, role: 'ADMIN' },
+    });
+
+    if (!user)
+      throw new BusinessError('you are not an admin!, or user not found');
+
+    const title = await this.db.title.findFirst({ where: { name } });
 
     if (title) throw new BusinessError(TitleErrorKeys.TITLE_ALREADY_EXISTS);
 
     const createdTitle = await this.db.title.create({
-      data: { name, description, premiereYear },
+      data: {
+        name,
+        description,
+        premiereYear,
+        imgUrl,
+        releasedEpisodes,
+        episodes,
+        createdBy: { connect: user },
+      },
+      include: {
+        createdBy: {
+          select: { id: true, name: true, email: true, role: true },
+        },
+      },
     });
 
     return createdTitle;

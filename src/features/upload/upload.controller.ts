@@ -9,14 +9,16 @@ import {
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
+  @Throttle({ default: { limit: 1, ttl: 2000 } })
+  @UseInterceptors(FileInterceptor('titleImg'))
+  async uploadTitleImg(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -27,6 +29,6 @@ export class UploadController {
     )
     file: Express.Multer.File,
   ) {
-    await this.uploadService.upload(file.originalname, file.buffer);
+    await this.uploadService.getS3FileUrl(file.originalname, file.buffer);
   }
 }
