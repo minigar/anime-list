@@ -6,9 +6,12 @@ import { UploadModule } from './features/upload/upload.module';
 import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { GenreModule } from './features/genres/genres.module';
+import * as redisStore from 'cache-manager-redis-store';
+import { CacheModule } from '@nestjs/cache-manager';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -19,6 +22,21 @@ import { GenreModule } from './features/genres/genres.module';
         },
       ],
     }),
+
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+
+      useFactory: async (configService: ConfigService) => ({
+        ttl: configService.getOrThrow('CACHE_TTL'),
+        store: redisStore,
+        host: configService.getOrThrow('REDIS_HOST'),
+        port: configService.getOrThrow('REDIS_PORT'),
+        max: configService.getOrThrow('CACHE_MAX'),
+      }),
+      isGlobal: true,
+      inject: [ConfigService],
+    }),
+
     AuthModule,
     TitleModule,
     UploadModule,
