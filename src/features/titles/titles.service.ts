@@ -74,4 +74,32 @@ export class TitleService {
     }
     return title;
   }
+
+  async addGenres(titleName: string, genres: string[]) {
+    const title = await this.db.title.findUnique({
+      where: { name: titleName },
+    });
+
+    if (!title) throw new BusinessError(TitleErrorKeys.TITLE_NOT_FOUND);
+
+    const existingGenres = await this.db.genre.findMany({
+      where: { name: { in: genres } },
+    });
+
+    const genreNames = existingGenres.map((genre) => genre.name);
+
+    return await this.db.title.update({
+      where: { name: titleName },
+      data: {
+        genres: {
+          connect: genreNames.map((name) => ({ name })),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        genres: { select: { id: true, name: true } },
+      },
+    });
+  }
 }

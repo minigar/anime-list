@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   FileTypeValidator,
@@ -7,6 +8,7 @@ import {
   Param,
   ParseFilePipe,
   ParseIntPipe,
+  Patch,
   Post,
   Req,
   UploadedFile,
@@ -86,5 +88,13 @@ export class TitleController {
   @Delete(':id')
   async deleteById(@Param('id', ParseIntPipe) id: number): Promise<Title> {
     return await this.titleService.deleteById(id);
+  }
+
+  @Patch(':titleName/genres')
+  async addGenres(
+    @Param('titleName') titleName: string,
+    @Body('genres') genres: string[],
+  ) {
+    return this.titleService.addGenres(titleName, genres);
   }
 }

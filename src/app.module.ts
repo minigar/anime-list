@@ -5,6 +5,7 @@ import { TitleModule } from './features/titles/titles.module';
 import { UploadModule } from './features/upload/upload.module';
 import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { GenreModule } from './features/genres/genres.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -21,6 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
     AuthModule,
     TitleModule,
     UploadModule,
+    GenreModule,
   ],
   providers: [
     {
