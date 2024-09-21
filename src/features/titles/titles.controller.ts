@@ -22,6 +22,7 @@ import { CurrentUser } from 'src/common/decarators';
 import { UploadService } from '../upload/upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('titles')
 export class TitleController {
@@ -30,11 +31,15 @@ export class TitleController {
     private readonly uploadService: UploadService,
   ) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get()
-  async getList(): Promise<Title[]> {
+  async getList() {
     return await this.titleService.getList();
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get(':id')
   async getById(@Param('id', ParseIntPipe) id: number): Promise<Title> {
     return await this.titleService.getById(id);
