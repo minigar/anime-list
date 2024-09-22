@@ -2,13 +2,13 @@ import {
   Controller,
   Get,
   Inject,
+  Redirect,
   Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GoogleAuthGuard, GoogleVerificationGuard } from 'src/common/guards';
-import { GoogleOAuthUser } from './auth.dto';
 import { CurrentUser } from 'src/common/decarators';
 import { User } from '@prisma/client';
 import { AUTH_SERVICE_TOKEN } from 'src/common/constants';
@@ -27,11 +27,9 @@ export class AuthController {
 
   @Get('auth/google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleAuthRedirect(
-    @CurrentUser() user: GoogleOAuthUser,
-  ): Promise<GoogleOAuthUser> {
-    return user;
-  }
+  @Redirect('/stats', 302)
+  async googleAuthRedirect(): Promise<void> {}
+
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
   @Get('stats')
