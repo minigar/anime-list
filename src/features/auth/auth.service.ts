@@ -15,10 +15,13 @@ export class AuthService {
 
     if (user) return user;
 
+    const lists = ['favorite', 'all', 'plans', 'watching', 'watched'];
+
     return await this.db.user.create({
       data: {
         name: profile.firstName,
         email: profile.email,
+        list: { createMany: { data: lists.map((l) => ({ name: l })) } },
       },
     });
   }
