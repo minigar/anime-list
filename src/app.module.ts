@@ -9,6 +9,7 @@ import { GenreModule } from './features/genres/genres.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ListModule } from './features/lists/lists.module';
+import { SeedModule } from './features/seed/seed.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -43,6 +44,7 @@ import { ListModule } from './features/lists/lists.module';
     UploadModule,
     GenreModule,
     ListModule,
+    SeedModule,
   ],
   providers: [
     {

@@ -34,7 +34,7 @@ model Title {
   releasedEpisodes Int  @default(0) @db.SmallInt
   episodes         Int? @db.SmallInt
 
-  createdBy User @relation(fields: [userId], references: [id])
+  createdBy User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
 
   genres Genre[]
