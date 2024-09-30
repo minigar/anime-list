@@ -1,6 +1,8 @@
 import {
   IsInt,
   IsNotEmpty,
+  IsNumberString,
+  IsOptional,
   IsString,
   Matches,
   Max,
@@ -54,4 +56,30 @@ export interface createTitleDtoIterface {
   releasedEpisodes?: number;
 
   episodes?: number;
+}
+
+export class PaginationDto {
+  @IsOptional()
+  @IsNumberString()
+  @Matches(/^([1-9][0-9]{0,3}|10000)$/, {
+    message: 'page must be a positive integer between 1 and 10000',
+  })
+  page?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  @Matches(/^([1-9][0-9]?|1[0-9][0]|200)$/, {
+    message: 'perPage must be a positive integer between 1 and 200',
+  })
+  perPage?: string;
+}
+
+export interface PaginationInterface {
+  page?: number;
+  perPage?: number;
+}
+
+export enum TITLE_FILTER_ENUM {
+  OrderByASC = 'ASC',
+  OrderByDESC = 'DESC',
 }

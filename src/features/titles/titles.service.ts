@@ -1,15 +1,19 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Title, User } from '@prisma/client';
 import { DatabaseService } from 'src/data/database.service';
-import { createTitleDto } from './title.dto';
+import { createTitleDto, PaginationInterface } from './title.dto';
 import { BusinessError } from 'src/common/errors/businessErrors/businessError';
 import { TitleErrorKeys } from './titles.errorKeys';
 
 @Injectable()
 export class TitleService {
   constructor(private readonly db: DatabaseService) {}
-  async getList(): Promise<Title[]> {
-    return await this.db.title.findMany();
+  async getList(filterDto: PaginationInterface): Promise<Title[]> {
+    console.log(filterDto);
+    return await this.db.title.findMany({
+      skip: (filterDto.page - 1) * filterDto.perPage,
+      take: Number(filterDto.perPage),
+    });
   }
 
   async getById(id: number): Promise<Title> {

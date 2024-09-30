@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -23,6 +24,7 @@ import { UploadService } from '../upload/upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { PaginationDto } from './title.dto';
 
 @Controller('titles')
 export class TitleController {
@@ -31,11 +33,13 @@ export class TitleController {
     private readonly uploadService: UploadService,
   ) {}
 
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(30)
   @Get()
-  async getList() {
-    return await this.titleService.getList();
+  async getList(@Query() { page, perPage }: PaginationDto) {
+    console.log(page, perPage);
+    return await this.titleService.getList({
+      page: Number(page) || 1,
+      perPage: Number(perPage) || 10,
+    });
   }
 
   @UseInterceptors(CacheInterceptor)
