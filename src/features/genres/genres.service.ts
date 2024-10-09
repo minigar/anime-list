@@ -32,4 +32,8 @@ export class GenreService {
     if (!genre) throw new BusinessError(GenreErrorKey.GENRE_DOES_NOT_EXISTS);
     await this.db.genre.delete({ where: { id } });
   }
+
+  async getAllIDs() {
+    return await this.db.genre.findMany({ select: { id: true } });
+  }
 }

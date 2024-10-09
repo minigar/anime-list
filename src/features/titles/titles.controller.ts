@@ -24,7 +24,7 @@ import { UploadService } from '../upload/upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { PaginationDto } from './title.dto';
+import { GenreQuerySortDto, PaginationDto, TitleSortDto } from './title.dto';
 
 @Controller('titles')
 export class TitleController {
@@ -34,12 +34,21 @@ export class TitleController {
   ) {}
 
   @Get()
-  async getList(@Query() { page, perPage }: PaginationDto) {
-    console.log(page, perPage);
-    return await this.titleService.getList({
-      page: Number(page) || 1,
-      perPage: Number(perPage) || 10,
-    });
+  async getList(
+    @Query() { page, perPage }: PaginationDto,
+    @Query() titleSortDto: TitleSortDto,
+    @Query() genres?: GenreQuerySortDto,
+  ) {
+    console.log(genres.exclude);
+    console.log(genres.include);
+    return await this.titleService.getList(
+      {
+        page: Number(page) || 1,
+        perPage: Number(perPage) || 10,
+      },
+      titleSortDto,
+      genres || { include: [], exclude: [] },
+    );
   }
 
   @UseInterceptors(CacheInterceptor)

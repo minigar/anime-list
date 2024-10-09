@@ -27,6 +27,7 @@ model Title {
   name String @unique
 
   description  String
+  // shortDescription String TODO:
   premiereYear Int    @db.SmallInt
 
   imgUrl String @default("https://anime-list-bucket.s3.eu-north-1.amazonaws.com/default")

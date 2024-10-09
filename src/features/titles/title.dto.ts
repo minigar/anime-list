@@ -1,4 +1,7 @@
 import {
+  ArrayNotEmpty,
+  IsArray,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumberString,
@@ -74,6 +77,29 @@ export class PaginationDto {
   perPage?: string;
 }
 
+export class TitleSortDto {
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'], {
+    message: "sortOrder must be either 'asc' or 'desc'",
+  })
+  sortOrder?: 'asc' | 'desc';
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['name', 'premiereYear', 'releasedEpisodes'], {
+    message:
+      "sortBy must be one of: 'name', 'premiereYear', or 'releasedEpisodes'",
+  })
+  sortBy?: 'name' | 'premiereYear' | 'releasedEpisodes';
+}
+
+export interface TitleSortInterface {
+  sortOrder?: 'asc' | 'desc';
+
+  sortBy?: 'name' | 'premiereYear' | 'releasedEpisodes';
+}
+
 export interface PaginationInterface {
   page?: number;
   perPage?: number;
@@ -82,4 +108,35 @@ export interface PaginationInterface {
 export enum TITLE_FILTER_ENUM {
   OrderByASC = 'ASC',
   OrderByDESC = 'DESC',
+}
+
+export class GenreQuerySortDto {
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty({ message: 'Include array should not be empty' })
+  @IsNumberString(
+    {},
+    {
+      each: true,
+      message: 'Each element in the include array must be a number',
+    },
+  )
+  include?: number[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty({ message: 'Include array should not be empty' })
+  @IsNumberString(
+    {},
+    {
+      each: true,
+      message: 'Each element in the exclude array must be a number',
+    },
+  )
+  exclude?: number[];
+}
+
+export interface GenreQuerySortInteface {
+  include?: number[];
+  exclude?: number[];
 }
