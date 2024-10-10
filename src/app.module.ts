@@ -10,6 +10,8 @@ import * as redisStore from 'cache-manager-redis-store';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ListModule } from './features/lists/lists.module';
 import { SeedModule } from './features/seed/seed.module';
+import { RatingModule } from './features/ratings/ratings.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -45,6 +47,7 @@ import { SeedModule } from './features/seed/seed.module';
     GenreModule,
     ListModule,
     SeedModule,
+    RatingModule,
   ],
   providers: [
     {
