@@ -17,7 +17,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { TitleService } from './titles.service';
-import { Title } from '@prisma/client';
+import { Title, User } from '@prisma/client';
 import { AdminGuard, GoogleVerificationGuard } from 'src/common/guards';
 import { CurrentUser } from 'src/common/decarators';
 import { UploadService } from '../upload/upload.service';
@@ -39,8 +39,6 @@ export class TitleController {
     @Query() titleSortDto: TitleSortDto,
     @Query() genres?: GenreQuerySortDto,
   ) {
-    console.log(genres.exclude);
-    console.log(genres.include);
     return await this.titleService.getList(
       {
         page: Number(page) || 1,
@@ -49,6 +47,18 @@ export class TitleController {
       titleSortDto,
       genres || { include: [], exclude: [] },
     );
+  }
+
+  @Get(':listName')
+  async getTitlesByListName(
+    @CurrentUser() user: User,
+    @Param('listName') listName: string,
+    @Query() { page, perPage }: PaginationDto,
+  ) {
+    return await this.titleService.getTitlesByListName(user.id, listName, {
+      page: Number(page) || 1,
+      perPage: Number(perPage) || 10,
+    });
   }
 
   @UseInterceptors(CacheInterceptor)

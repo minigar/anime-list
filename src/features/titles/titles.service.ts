@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Title, User } from '@prisma/client';
+import { Prisma, Title, User } from '@prisma/client';
 import { DatabaseService } from 'src/data/database.service';
 import {
   createTitleDto,
@@ -17,68 +17,40 @@ export class TitleService {
     private readonly db: DatabaseService,
     private readonly genreService: GenreService,
   ) {}
+
   async getList(
     paginationInterface: PaginationInterface,
     sortingInterface: TitleSortInterface,
     genres: GenreQuerySortInteface,
   ): Promise<Title[]> {
-    const includeGenres =
-      genres?.include?.map((str) => parseInt(str.toString(), 10)) || [];
-    const excludeGenres =
-      genres?.exclude?.map((str) => parseInt(str.toString(), 10)) || [];
-
-    const validIncludeGenres = includeGenres.filter(
-      (id) => !excludeGenres.includes(id),
-    );
+    const where = this.getGenreBasedFilter(genres);
 
     return await this.db.title.findMany({
       skip: (paginationInterface.page - 1) * paginationInterface.perPage,
       take: Number(paginationInterface.perPage),
+      where, //filter by genres(include/exclude)
+      //TODO: add genre validation in dto prefered
+      include: { genres: { select: { id: true, name: true } } },
       orderBy: {
         [sortingInterface.sortBy || 'createdAt']:
           sortingInterface.sortOrder || 'desc',
       },
-      where: {
-        AND: [
-          // If genres.include exists, include the relevant genre condition
-          ...(genres?.include?.length
-            ? [
-                {
-                  genres: {
-                    some: {
-                      id: {
-                        in: validIncludeGenres,
-                      },
-                    },
-                  },
-                },
-              ]
-            : []),
-          ...(genres?.exclude?.length
-            ? [
-                {
-                  genres: {
-                    none: {
-                      id: {
-                        in: excludeGenres,
-                      },
-                    },
-                  },
-                },
-              ]
-            : []),
-        ],
-      }, //TODO: add genre validation in dto prefered
-      include: { genres: { select: { id: true, name: true } } },
     });
   }
 
-  async getListByListName(userId: number, listName: string) {
+  async getTitlesByListName(
+    userId: number,
+    listName: string,
+    paginationInterface: PaginationInterface,
+  ) {
     //add pagination + filter TODO:
     return await this.db.list.findUnique({
       where: { userId_name: { name: listName, userId } },
       include: {
-        titles: true,
+        titles: {
+          skip: (paginationInterface.page - 1) * paginationInterface.perPage,
+          take: Number(paginationInterface.perPage),
+        },
       },
     });
   }
@@ -172,5 +144,46 @@ export class TitleService {
         genres: { select: { id: true, name: true } },
       },
     });
+  }
+
+  getGenreBasedFilter(genres: GenreQuerySortInteface): Prisma.TitleWhereInput {
+    const includeGenres =
+      genres?.include?.map((str) => parseInt(str.toString(), 10)) || [];
+    const excludeGenres =
+      genres?.exclude?.map((str) => parseInt(str.toString(), 10)) || [];
+
+    const validIncludeGenres = includeGenres.filter(
+      (id) => !excludeGenres.includes(id),
+    );
+    return {
+      AND: [
+        ...(genres?.include?.length
+          ? [
+              {
+                genres: {
+                  some: {
+                    id: {
+                      in: validIncludeGenres,
+                    },
+                  },
+                },
+              },
+            ]
+          : []),
+        ...(genres?.exclude?.length
+          ? [
+              {
+                genres: {
+                  none: {
+                    id: {
+                      in: excludeGenres,
+                    },
+                  },
+                },
+              },
+            ]
+          : []),
+      ],
+    };
   }
 }
