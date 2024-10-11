@@ -49,7 +49,7 @@ export class TitleController {
     );
   }
 
-  @Get(':listName')
+  @Get('list/:listName')
   async getTitlesByListName(
     @CurrentUser() user: User,
     @Param('listName') listName: string,
